@@ -1,24 +1,24 @@
 #include <stdio.h>
 #include <malloc.h>
 
-typedef struct note
+typedef struct node
 {
     int elem;
-    struct note *next;
-}note;
+    struct node *next;
+}node;
 
-note* buildList()
+node* buildList()
 {
-    note *head;
-    head = (note *)malloc(sizeof(note));
+    node *head;
+    head = (node *)malloc(sizeof(node));
     head->next = NULL;
     return head;
 }
 
-note* getTail(note *list_head)
+node* getTail(node *list_head)
 {
-    note *curr = list_head;
-    note *tail;
+    node *curr = list_head;
+    node *tail;
     while (curr->next != NULL)
     {
         curr = curr->next;
@@ -27,9 +27,9 @@ note* getTail(note *list_head)
     return tail;
 }
 
-int getSize(note *list_head)
+int getSize(node *list_head)
 {
-    note *curr = list_head;
+    node *curr = list_head;
     int size = 0;
     while (curr->next != NULL)
     {
@@ -39,9 +39,9 @@ int getSize(note *list_head)
     return size;
 }
 
-int getValue(note *list_head,int pos)
+int getValue(node *list_head,int pos)
 {
-    note *curr = list_head->next;
+    node *curr = list_head->next;
     for (int i = 0; i < pos; i++)
     {
         curr = curr->next;
@@ -49,18 +49,18 @@ int getValue(note *list_head,int pos)
     return curr->elem;
 }
 
-void listAppend(note *list_head, int num)
+void listAppend(node *list_head, int num)
 {
-    note *tail = getTail(list_head);
-    note *new_note = (note *)malloc(sizeof(note));
+    node *tail = getTail(list_head);
+    node *new_note = (node *)malloc(sizeof(node));
     new_note->elem = num;
     new_note->next = NULL;
     tail->next = new_note;
 }
 
-void printList(note *list_head)
+void printList(node *list_head)
 {
-    note *curr = list_head->next;
+    node *curr = list_head->next;
     while (curr != NULL)
     {
         printf("%d ", curr->elem);
@@ -69,10 +69,10 @@ void printList(note *list_head)
     printf("\n");
 }
 
-void freeList(note *list_head)
+void freeList(node *list_head)
 {
-    note *curr = list_head;
-    note *next;
+    node *curr = list_head;
+    node *next;
     while (curr != NULL)
     {
         next = curr->next;
@@ -81,7 +81,7 @@ void freeList(note *list_head)
     }
 }
 
-void clearList(note *list_begin)
+void clearList(node *list_begin)
 {
     freeList(list_begin->next);
     list_begin->next = NULL;
@@ -89,14 +89,14 @@ void clearList(note *list_begin)
 
 int main(void)
 {
-    note *l1 = buildList();
+    node *l1 = buildList();
     int people_num;
     scanf("%d", &people_num);
     for (int i = 0; i < people_num; i++)
     {
         listAppend(l1, i + 1);
     }
-    note *l2 = buildList();
+    node *l2 = buildList();
     int code;
     while (scanf("%d",&code) != EOF && code != 0)
     {
@@ -107,7 +107,7 @@ int main(void)
                 listAppend(l2, getValue(l1, i));
             }
         }
-        note *temp = l1;
+        node *temp = l1;
         l1 = l2;
         l2 = temp;
         clearList(l2);
