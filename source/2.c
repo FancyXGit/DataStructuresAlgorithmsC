@@ -37,7 +37,7 @@ int isListEmpty(node *l)
     }
 }
 
-node* appendList(node* l,int new_exp, double new_coef)
+void appendList(node* l,int new_exp, double new_coef)
 {
     node *tail = getListTail(l);
     node *new_node = (node *)malloc(sizeof(node));
