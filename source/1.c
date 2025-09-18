@@ -1,117 +1,146 @@
 #include <stdio.h>
 #include <malloc.h>
 
-typedef struct node
-{
-    int elem;
+typedef struct node{
+    int val;
     struct node *next;
-}node;
+} node;
 
-node* buildList()
+node* buildCircleList(int first_val)
 {
-    node *head;
-    head = (node *)malloc(sizeof(node));
-    head->next = NULL;
+    node *head = (node *)malloc(sizeof(node));
+    head->next = head;
+    head->val = first_val;
     return head;
 }
 
-node* getTail(node *list_head)
+node* getCircleTail(node *list)
 {
-    node *curr = list_head;
-    node *tail;
-    while (curr->next != NULL)
+    node *curr = list;
+    while (curr->next != list)
     {
         curr = curr->next;
     }
-    tail = curr;
-    return tail;
+    return curr;
 }
 
-int getSize(node *list_head)
+void appendCircleList(node *list,int new_val)
 {
-    node *curr = list_head;
-    int size = 0;
-    while (curr->next != NULL)
-    {
+    node *head = list;
+    node *new_node = (node *)malloc(sizeof(node));
+    node *tail = getCircleTail(list);
+    tail->next = new_node;
+    new_node->val = new_val;
+    new_node->next = head;
+}
+
+void printCircleList(node *list)
+{
+    node *head = list;
+    node *tail = getCircleTail(list);
+    node *curr = head;
+    do{
+        printf("%d ", curr->val);
         curr = curr->next;
-        size++;
-    }
-    return size;
-}
-
-int getValue(node *list_head,int pos)
-{
-    node *curr = list_head->next;
-    for (int i = 0; i < pos; i++)
-    {
-        curr = curr->next;
-    }
-    return curr->elem;
-}
-
-void listAppend(node *list_head, int num)
-{
-    node *tail = getTail(list_head);
-    node *new_note = (node *)malloc(sizeof(node));
-    new_note->elem = num;
-    new_note->next = NULL;
-    tail->next = new_note;
-}
-
-void printList(node *list_head)
-{
-    node *curr = list_head->next;
-    while (curr != NULL)
-    {
-        printf("%d ", curr->elem);
-        curr = curr->next;
-    }
+    } while (curr != head);
     printf("\n");
 }
 
-void freeList(node *list_head)
+void clearCircleList(node *list, int first_val)
 {
-    node *curr = list_head;
-    node *next;
-    while (curr != NULL)
+    node *curr = list->next->next;
+    node *prev = list->next;
+    while (curr != list)
     {
-        next = curr->next;
-        free(curr);
-        curr = next;
+        free(prev);
+        prev = curr;
+        curr = curr->next;
+    }
+    list->val = first_val;
+    list->next = list;
+}
+
+node* delSelectElem(node *list, node *pos)
+{
+    if (pos == list)
+    {
+        node *tail = getCircleTail(list);
+        node *new_head = list->next;
+        free(list);
+        tail->next = new_head;
+        return new_head;
+    }
+    else
+    {
+        node *curr = list;
+        while (curr->next != pos)
+        {
+            curr = curr->next;
+        }
+        curr->next = pos->next;
+        free(pos);
+        return list;
     }
 }
 
-void clearList(node *list_begin)
+node* doJosephus(node *list, node *new_list, int interval)
 {
-    freeList(list_begin->next);
-    list_begin->next = NULL;
+    node *curr1 = list;
+    int count = 1;
+    int first_add = 1;
+    while (list->next != list)
+    {
+        node *next = curr1->next;
+        if (count == interval)
+        {
+            if (first_add)
+            {
+                new_list->val = curr1->val;
+                list = delSelectElem(list, curr1);
+                curr1 = next;
+                count = 1;
+                first_add = 0;
+            }
+            else
+            {
+                appendCircleList(new_list, curr1->val);
+                list = delSelectElem(list, curr1);
+                curr1 = next;
+                count = 1;
+            }
+        }
+        else
+        {
+            curr1 = curr1->next;
+            count++;
+        }
+    }
+    appendCircleList(new_list, list->val);
+    return list;
 }
 
 int main(void)
 {
-    node *l1 = buildList();
-    int people_num;
+    int people_num = 0;
     scanf("%d", &people_num);
-    for (int i = 0; i < people_num; i++)
+    node *l1 = buildCircleList(1);
+    for (int i = 2; i <= people_num; i++)
     {
-        listAppend(l1, i + 1);
+        appendCircleList(l1,i);
     }
-    node *l2 = buildList();
-    int code;
+    node *l2 = buildCircleList(0);
+    int code = 0;
     while (scanf("%d",&code) != EOF && code != 0)
     {
-        for (int i = 0; i < getSize(l1); i++)
-        {
-            if ((i + 1) % code == 0)
-            {
-                listAppend(l2, getValue(l1, i));
-            }
-        }
+        l1 = doJosephus(l1, l2, code);
         node *temp = l1;
         l1 = l2;
         l2 = temp;
-        clearList(l2);
-        printList(l1);
+        clearCircleList(l2, 0);
+        if (getchar() == '\n')
+        {
+            break;
+        }
     }
-    printList(l1);
+    printCircleList(l1);
 }
