@@ -60,6 +60,35 @@ void clearCircleList(node *list, int first_val)
     list->next = list;
 }
 
+/*
+ *这个函数会返回删除元素后新的头节点
+ *如果删除头节点，则返回头节点下一个元素
+ *如果删除其他节点，则返回原头节点
+ *调用时需写list = delSelectElem(list, to_del);
+ */
+node* delSelectElem(node *list, node *pos)
+{
+    if (pos == list)
+    {
+        node *tail = getCircleTail(list);
+        node *new_head = list->next;
+        free(list);
+        tail->next = new_head;
+        return new_head;
+    }
+    else
+    {
+        node *curr = list;
+        while (curr->next != pos)
+        {
+            curr = curr->next;
+        }
+        curr->next = pos->next;
+        free(pos);
+        return list;
+    }
+}
+
 int main(void)
 {
     node *list1 = buildCircleList(0);
