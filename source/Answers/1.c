@@ -37,7 +37,6 @@ void appendCircleList(node *list,int new_val)
 void printCircleList(node *list)
 {
     node *head = list;
-    node *tail = getCircleTail(list);
     node *curr = head;
     do{
         printf("%d ", curr->val);
