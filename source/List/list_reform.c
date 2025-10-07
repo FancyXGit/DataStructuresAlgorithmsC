@@ -194,7 +194,7 @@ int getIndex(list *l, int elem)
     {
         curr = curr->next;
         index++;
-        if (curr->elem == elem)
+        if (curr != NULL && curr->elem == elem)
         {
             return index;
         }
